@@ -1,0 +1,29 @@
+image: atlassian/default-image:3
+
+pipelines:
+  default:
+   - parallel:
+      - step:
+            script:
+              - 'echo ''sudo apt-get install flask'' >> deploy-out.sh'
+              - 'echo ''sudo apt install python3 python3-pip tmux htop'' >> deploy-out.sh'
+              - 'echo ''rm -r *'' >> deploy-out.sh'
+              - 'echo ''mkdir demoapp'' >> deploy-out.sh'
+              - 'echo ''cd demoapp'' >> deploy-out.sh'
+              - 'echo ''git clone https://yashgor8@bitbucket.org/yashgor8/project.git'' >> deploy-out.sh'
+              - 'echo ''cd project'' >> deploy-out.sh'
+              - 'echo ''sudo python3 app.py &'' >> deploy-out.sh'
+              - pipe: atlassian/ssh-run:0.4.0
+                variables:
+                  SSH_USER: 'ubuntu'
+                  SERVER: '35.154.31.212'
+                  MODE: 'script'
+                  COMMAND: 'deploy-out.sh'
+      - step:
+            script:
+              - pipe: atlassian/ssh-run:0.4.0
+                variables:
+                  SSH_USER: 'ubuntu'
+                  SERVER: '35.154.31.212'
+                  MODE: 'script'
+                  COMMAND: 'script.sh'
